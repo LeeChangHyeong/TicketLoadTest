@@ -6,7 +6,7 @@ COPY . .
 RUN ./gradlew build -x test --no-daemon
 
 # 2. Run Stage
-FROM openjdk:25-jdk
+FROM openjdk:21-jdk
 WORKDIR /app
 COPY --from=builder /app/build/libs/*.jar app.jar
 
