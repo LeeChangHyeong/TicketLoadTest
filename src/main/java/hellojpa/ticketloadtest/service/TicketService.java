@@ -19,10 +19,10 @@ public class TicketService {
     private final UserRepository userRepository;
 
     /**
-     * synchronized 적용 (자바 레벨의 락)
+     * 기본 예매 로직 (락 없음 - 동시성 문제 발생 가능)
      */
     @Transactional
-    public synchronized Long reserve(Long userId, Long ticketId) {
+    public Long reserve(Long userId, Long ticketId) {
         // 1. 유저 조회
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 유저입니다."));
