@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8">
     <title>TicketLoadTest</title>
@@ -43,7 +44,18 @@
             letter-spacing: -0.5px;
         }
 
-        .auth-buttons button {
+        .auth-buttons {
+            display: flex;
+            align-items: center;
+        }
+
+        .user-info {
+            margin-right: 1rem;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+        }
+
+        .auth-buttons button, .auth-buttons form button {
             background-color: transparent;
             border: 1px solid var(--primary);
             color: var(--primary);
@@ -55,7 +67,7 @@
             font-weight: 500;
         }
 
-        .auth-buttons button:hover {
+        .auth-buttons button:hover, .auth-buttons form button:hover {
             background-color: var(--primary);
             color: white;
         }
@@ -160,10 +172,16 @@
 <body>
 
 <header>
-    <a href="#" class="logo">TicketLoadTest</a>
-    <div class="auth-buttons">
+    <a href="/" class="logo">TicketLoadTest</a>
+    <div class="auth-buttons" sec:authorize="isAnonymous()">
         <button th:onclick="|location.href='@{/login}'|">로그인</button>
         <button class="btn-signup" th:onclick="|location.href='@{/signup}'|">회원가입</button>
+    </div>
+    <div class="auth-buttons" sec:authorize="isAuthenticated()">
+        <span class="user-info">안녕하세요, <span sec:authentication="name">사용자</span>님</span>
+        <form th:action="@{/logout}" method="post" style="display:inline;">
+            <button type="submit">로그아웃</button>
+        </form>
     </div>
 </header>
 
@@ -191,11 +209,16 @@
                         <span class="status-badge" th:unless="${event.stock > 0}" style="background-color: rgba(231, 76, 60, 0.2); color: #e74c3c;">매진</span>
                     </td>
                     <td>
-                        <form method="post" action="/reserve" th:if="${event.stock > 0}">
-                            <input type="hidden" name="ticketId" th:value="${event.id}">
-                            <button type="submit" class="btn-book">예매하기</button>
-                        </form>
-                        <button class="btn-book" disabled style="background-color: #555; cursor: not-allowed;" th:unless="${event.stock > 0}">예매불가</button>
+                        <div sec:authorize="isAuthenticated()">
+                            <form method="post" th:action="@{/reserve}" th:if="${event.stock > 0}">
+                                <input type="hidden" name="ticketId" th:value="${event.id}">
+                                <button type="submit" class="btn-book">예매하기</button>
+                            </form>
+                            <button class="btn-book" disabled style="background-color: #555; cursor: not-allowed;" th:unless="${event.stock > 0}">예매불가</button>
+                        </div>
+                        <div sec:authorize="isAnonymous()">
+                            <button class="btn-book" th:onclick="|location.href='@{/login}'|">예매하기 (로그인)</button>
+                        </div>
                     </td>
                 </tr>
             </tbody>
@@ -207,8 +230,10 @@
     &copy; 2026 TicketLoadTest Corp. All rights reserved.
 </footer>
 
-<script th:if="${message}">
+<script th:inline="javascript" th:if="${message}">
+    /*<![CDATA[*/
     alert([[${message}]]);
+    /*]]>*/
 </script>
 
 </body>

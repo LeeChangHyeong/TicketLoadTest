@@ -1,8 +1,10 @@
 package hellojpa.ticketloadtest.repository;
 
 import hellojpa.ticketloadtest.domain.Ticket;
-
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.util.List;
+
 public interface TicketRepository extends JpaRepository<Ticket, Long> {
+    List<Ticket> findAllByOrderByIdAsc();
 }

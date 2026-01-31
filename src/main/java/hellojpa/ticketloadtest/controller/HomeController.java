@@ -1,14 +1,19 @@
 package hellojpa.ticketloadtest.controller;
 
 import hellojpa.ticketloadtest.domain.Ticket;
+import hellojpa.ticketloadtest.domain.User;
 import hellojpa.ticketloadtest.repository.TicketRepository;
+import hellojpa.ticketloadtest.repository.UserRepository;
 import hellojpa.ticketloadtest.service.TicketService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
 
@@ -18,31 +23,33 @@ public class HomeController {
 
     private final TicketService ticketService;
     private final TicketRepository ticketRepository;
+    private final UserRepository userRepository;
 
     @GetMapping("/")
     public String home(Model model) {
-        List<Ticket> events = ticketRepository.findAll();
+        // 항상 ID 순으로 정렬하여 조회
+        List<Ticket> events = ticketRepository.findAllByOrderByIdAsc();
         model.addAttribute("events", events);
         return "index";
     }
-    
+
     @PostMapping("/reserve")
-    public String reserve(@RequestParam Long ticketId, Model model) {
-        // 테스트를 위해 임시로 ID가 1인 유저를 사용 (로그인 구현 전 단계이므로)
-        // 실제로는 SecurityContextHolder 등에서 유저 정보를 가져와야 함
-        Long tempUserId = 1L;
-        
+    public String reserve(@RequestParam Long ticketId, Authentication authentication, RedirectAttributes redirectAttributes) {
+        if (authentication == null || !authentication.isAuthenticated()) {
+            return "redirect:/login";
+        }
+
+        String email = authentication.getName();
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new UsernameNotFoundException("유저를 찾을 수 없습니다: " + email));
+
         try {
-            ticketService.reserve(tempUserId, ticketId);
-            model.addAttribute("message", "예매가 완료되었습니다!");
+            ticketService.reserve(user.getId(), ticketId);
+            redirectAttributes.addFlashAttribute("message", "예매가 완료되었습니다!");
         } catch (Exception e) {
-            model.addAttribute("message", "예매 실패: " + e.getMessage());
+            redirectAttributes.addFlashAttribute("message", "예매 실패: " + e.getMessage());
         }
         
-        // 데이터 갱신 후 다시 목록 보여주기
-        List<Ticket> events = ticketRepository.findAll();
-        model.addAttribute("events", events);
-        
-        return "index";
+        return "redirect:/";
     }
 }
