@@ -1,10 +1,22 @@
-# This is an example docker-compose file. 
-# Copy this file to 'docker-compose.yml' and adjust the environment variables.
-
+version: '3.8'
 services:
+  app:
+    build: .
+    container_name: ticket-app
+    ports:
+      - "8080:8080"
+    environment:
+      - SPRING_DATASOURCE_URL=${SPRING_DATASOURCE_URL:-jdbc:postgresql://db:5432/ticketdb}
+      - SPRING_DATASOURCE_USERNAME=${SPRING_DATASOURCE_USERNAME:-user}
+      - SPRING_DATASOURCE_PASSWORD=${SPRING_DATASOURCE_PASSWORD:-password}
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=${SPRING_JPA_HIBERNATE_DDL_AUTO:-update}
+    depends_on:
+      - db
+    restart: always
+
   db:
     image: postgres:16
-    container_name: ticket-postgres-example
+    container_name: ticket-postgres
     environment:
       POSTGRES_DB: ${POSTGRES_DB:-ticketdb}
       POSTGRES_USER: ${POSTGRES_USER:-user}
