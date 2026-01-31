@@ -16,16 +16,18 @@ public class UserSecurityService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        // 1. 이메일로 유저 조회
+        System.out.println("[AUTH] Login attempt for email: " + email);
+        
         User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new UsernameNotFoundException("사용자를 찾을 수 없습니다: " + email));
+                .orElseThrow(() -> {
+                    System.out.println("[AUTH] Fail: User not found - " + email);
+                    return new UsernameNotFoundException("사용자를 찾을 수 없습니다: " + email);
+                });
 
-        // 2. Spring Security가 이해할 수 있는 UserDetails 객체로 변환하여 반환
-        // 비밀번호 검증은 Spring Security가 이 객체의 비밀번호(DB값)와 사용자가 입력한 비밀번호를 비교하여 자동으로 수행함
         return org.springframework.security.core.userdetails.User.builder()
                 .username(user.getEmail())
                 .password(user.getPassword())
-                .roles("USER") // 권한 설정 (임시로 USER 권한 부여)
+                .roles("USER")
                 .build();
     }
 }

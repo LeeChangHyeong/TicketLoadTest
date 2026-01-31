@@ -15,6 +15,7 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
+            .csrf((csrf) -> csrf.disable()) // JMeter 테스트를 위해 CSRF 비활성화
             .authorizeHttpRequests((requests) -> requests
                 .requestMatchers("/", "/login", "/signup", "/css/**", "/js/**").permitAll()
                 .anyRequest().authenticated()

@@ -36,17 +36,22 @@ public class HomeController {
     @PostMapping("/reserve")
     public String reserve(@RequestParam Long ticketId, Authentication authentication, RedirectAttributes redirectAttributes) {
         if (authentication == null || !authentication.isAuthenticated()) {
+            System.out.println("[RESERVE] Fail: Not Authenticated");
             return "redirect:/login";
         }
 
         String email = authentication.getName();
+        System.out.println("[RESERVE] User: " + email + ", TicketID: " + ticketId);
+
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new UsernameNotFoundException("유저를 찾을 수 없습니다: " + email));
 
         try {
             ticketService.reserve(user.getId(), ticketId);
+            System.out.println("[RESERVE] Success for user: " + email);
             redirectAttributes.addFlashAttribute("message", "예매가 완료되었습니다!");
         } catch (Exception e) {
+            System.out.println("[RESERVE] Error: " + e.getMessage());
             redirectAttributes.addFlashAttribute("message", "예매 실패: " + e.getMessage());
         }
         

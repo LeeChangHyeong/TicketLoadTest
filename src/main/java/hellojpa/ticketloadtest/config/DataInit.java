@@ -11,6 +11,8 @@ import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 
 
+import org.springframework.security.crypto.password.PasswordEncoder;
+
 import javax.sql.DataSource;
 import java.sql.Connection;
 
@@ -21,13 +23,16 @@ public class DataInit {
     private final UserRepository userRepository;
     private final TicketRepository ticketRepository;
     private final DataSource dataSource;
+    private final PasswordEncoder passwordEncoder;
 
     @EventListener(ApplicationReadyEvent.class)
     @Transactional
     public void initData() {
+        
+        // ... (DB 로그 생략)
 
         if (userRepository.count() == 0) {
-            userRepository.save(new User("테스트유저", "test@test.com", "123"));
+            userRepository.save(new User("테스트유저", "test@test.com", passwordEncoder.encode("123")));
         }
 
         if (ticketRepository.count() == 0) {
