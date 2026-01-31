@@ -36,8 +36,8 @@ public class DataInit {
         }
 
         if (ticketRepository.count() == 0) {
-            ticketRepository.save(new Ticket("뮤지컬 <지킬 앤 하이드>", 150000, 700));
-            ticketRepository.save(new Ticket("2026 싸이 흠뻑쇼 - 서울", 145000, 300));
+            ticketRepository.save(new Ticket("뮤지컬 <지킬 앤 하이드>", 150000, 3000));
+            ticketRepository.save(new Ticket("2026 싸이 흠뻑쇼 - 서울", 145000, 10000));
             ticketRepository.save(new Ticket("임영웅 리사이틀", 160000, 30)); // 적은 재고로 테스트용
         }
     }

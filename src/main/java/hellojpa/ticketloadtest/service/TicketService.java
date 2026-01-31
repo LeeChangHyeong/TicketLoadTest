@@ -27,8 +27,8 @@ public class TicketService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 유저입니다."));
 
-        // 2. 티켓 조회
-        Ticket ticket = ticketRepository.findById(ticketId)
+        // 2. 티켓 조회 (비관적 락 적용)
+        Ticket ticket = ticketRepository.findByIdWithLock(ticketId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 공연입니다."));
 
         // 3. 재고 차감 (여기서 동시성 문제 발생 가능)
