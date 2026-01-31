@@ -11,16 +11,21 @@ import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 
 
+import javax.sql.DataSource;
+import java.sql.Connection;
+
 @Component
 @RequiredArgsConstructor
 public class DataInit {
 
     private final UserRepository userRepository;
     private final TicketRepository ticketRepository;
+    private final DataSource dataSource;
 
     @EventListener(ApplicationReadyEvent.class)
     @Transactional
     public void initData() {
+
         if (userRepository.count() == 0) {
             userRepository.save(new User("테스트유저", "test@test.com", "123"));
         }
