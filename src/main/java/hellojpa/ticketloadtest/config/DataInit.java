@@ -22,7 +22,7 @@ public class DataInit {
     @Transactional
     public void initData() {
         if (userRepository.count() == 0) {
-            userRepository.save(new User("테스트유저", "test@test.com"));
+            userRepository.save(new User("테스트유저", "test@test.com", "123"));
         }
 
         if (ticketRepository.count() == 0) {

@@ -1,0 +1,19 @@
+# This is an example docker-compose file. 
+# Copy this file to 'docker-compose.yml' and adjust the environment variables.
+
+services:
+  db:
+    image: postgres:16
+    container_name: ticket-postgres-example
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-ticketdb}
+      POSTGRES_USER: ${POSTGRES_USER:-user}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-password}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data_example:/var/lib/postgresql/data
+    restart: always
+
+volumes:
+  postgres_data_example:

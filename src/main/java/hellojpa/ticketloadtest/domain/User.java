@@ -19,8 +19,11 @@ public class User {
     @Column(unique = true)
     private String email;
 
-    public User(String name, String email) {
+    private String password;
+
+    public User(String name, String email, String password) {
         this.name = name;
         this.email = email;
+        this.password = password;
     }
 }

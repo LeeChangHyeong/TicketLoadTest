@@ -45,6 +45,7 @@ out/
 
 ### Docker ###
 .docker/
+docker-compose.yml
 
 ### Log files ###
 *.log
