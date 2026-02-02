@@ -18,20 +18,17 @@ public class TicketService {
     private final ReservationRepository reservationRepository;
     private final UserRepository userRepository;
 
-    /**
-     * 기본 예매 로직 (락 없음 - 동시성 문제 발생 가능)
-     */
     @Transactional
     public Long reserve(Long userId, Long ticketId) {
         // 1. 유저 조회
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 유저입니다."));
 
-        // 2. 티켓 조회 (일반 조회로 원복)
+        // 2. 티켓 조회
         Ticket ticket = ticketRepository.findById(ticketId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 공연입니다."));
 
-        // 3. 재고 차감 (여기서 동시성 문제 발생 가능)
+        // 3. 재고 차감
         ticket.decreaseStock();
 
         // 4. 예약 정보 생성 및 저장

@@ -4,6 +4,7 @@ import hellojpa.ticketloadtest.domain.Ticket;
 import hellojpa.ticketloadtest.domain.User;
 import hellojpa.ticketloadtest.repository.TicketRepository;
 import hellojpa.ticketloadtest.repository.UserRepository;
+import hellojpa.ticketloadtest.service.TicketFacade;
 import hellojpa.ticketloadtest.service.TicketService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
@@ -21,7 +22,8 @@ import java.util.List;
 @RequiredArgsConstructor
 public class HomeController {
 
-    private final TicketService ticketService;
+    private final TicketService ticketService; // 필요 시 사용
+    private final TicketFacade ticketFacade;   // 분산 락 적용된 서비스
     private final TicketRepository ticketRepository;
     private final UserRepository userRepository;
 
@@ -47,7 +49,7 @@ public class HomeController {
                 .orElseThrow(() -> new UsernameNotFoundException("유저를 찾을 수 없습니다: " + email));
 
         try {
-            ticketService.reserve(user.getId(), ticketId);
+            ticketFacade.reserve(user.getId(), ticketId); // Facade 사용
             System.out.println("[RESERVE] Success for user: " + email);
             redirectAttributes.addFlashAttribute("message", "예매가 완료되었습니다!");
         } catch (Exception e) {
