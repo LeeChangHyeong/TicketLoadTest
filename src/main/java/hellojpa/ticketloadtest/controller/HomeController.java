@@ -18,6 +18,9 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+
 @Controller
 @RequiredArgsConstructor
 public class HomeController {
@@ -32,6 +35,15 @@ public class HomeController {
         // 항상 ID 순으로 정렬하여 조회
         List<Ticket> events = ticketRepository.findAllByOrderByIdAsc();
         model.addAttribute("events", events);
+        
+        try {
+            String serverInfo = "Server ID: " + InetAddress.getLocalHost().getHostName();
+            model.addAttribute("serverInfo", serverInfo);
+            System.out.println("[ACCESS] " + serverInfo);
+        } catch (UnknownHostException e) {
+            model.addAttribute("serverInfo", "Server ID: Unknown");
+        }
+        
         return "index";
     }
 

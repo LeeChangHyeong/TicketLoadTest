@@ -172,7 +172,13 @@
 <body>
 
 <header>
-    <a href="/" class="logo">TicketLoadTest</a>
+    <div style="display: flex; align-items: center; gap: 1rem;">
+        <a href="/" class="logo">TicketLoadTest</a>
+        <span style="background-color: #9b59b6; color: white; padding: 0.2rem 0.6rem; border-radius: 20px; font-size: 0.75rem; font-weight: bold; letter-spacing: 0.5px;" 
+              th:text="${serverInfo}">
+            Ticket-Server-Unknown
+        </span>
+    </div>
     <div class="auth-buttons" sec:authorize="isAnonymous()">
         <button th:onclick="|location.href='@{/login}'|">로그인</button>
         <button class="btn-signup" th:onclick="|location.href='@{/signup}'|">회원가입</button>
@@ -227,7 +233,8 @@
 </main>
 
 <footer>
-    &copy; 2026 TicketLoadTest Corp. All rights reserved.
+    &copy; 2026 TicketLoadTest Corp. All rights reserved. <br>
+    <span style="font-size: 0.8rem; color: #555;" th:text="${serverInfo}"></span>
 </footer>
 
 <script th:inline="javascript" th:if="${message}">
