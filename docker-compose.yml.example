@@ -1,10 +1,51 @@
 version: '3.8'
 services:
-  app:
-    build: .
-    container_name: ticket-app
+  nginx:
+    image: nginx:alpine
+    container_name: ticket-nginx
     ports:
-      - "8080:8080"
+      - "80:80"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - app-1
+      - app-2
+      - app-3
+    restart: always
+
+  app-1:
+    build: .
+    hostname: Ticket-Server-1
+    environment:
+      - SPRING_DATASOURCE_URL=${SPRING_DATASOURCE_URL:-jdbc:postgresql://db:5432/ticketdb}
+      - SPRING_DATASOURCE_USERNAME=${SPRING_DATASOURCE_USERNAME:-user}
+      - SPRING_DATASOURCE_PASSWORD=${SPRING_DATASOURCE_PASSWORD:-password}
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=${SPRING_JPA_HIBERNATE_DDL_AUTO:-update}
+      - SPRING_DATA_REDIS_HOST=${REDIS_HOST:-redis}
+      - SPRING_DATA_REDIS_PORT=${REDIS_PORT:-6379}
+    depends_on:
+      - db
+      - redis
+    restart: always
+
+  app-2:
+    build: .
+    hostname: Ticket-Server-2
+    environment:
+      - SPRING_DATASOURCE_URL=${SPRING_DATASOURCE_URL:-jdbc:postgresql://db:5432/ticketdb}
+      - SPRING_DATASOURCE_USERNAME=${SPRING_DATASOURCE_USERNAME:-user}
+      - SPRING_DATASOURCE_PASSWORD=${SPRING_DATASOURCE_PASSWORD:-password}
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=${SPRING_JPA_HIBERNATE_DDL_AUTO:-update}
+      - SPRING_DATA_REDIS_HOST=${REDIS_HOST:-redis}
+      - SPRING_DATA_REDIS_PORT=${REDIS_PORT:-6379}
+    depends_on:
+      - db
+      - redis
+    restart: always
+
+  app-3:
+    build: .
+    hostname: Ticket-Server-3
     environment:
       - SPRING_DATASOURCE_URL=${SPRING_DATASOURCE_URL:-jdbc:postgresql://db:5432/ticketdb}
       - SPRING_DATASOURCE_USERNAME=${SPRING_DATASOURCE_USERNAME:-user}
@@ -33,9 +74,6 @@ services:
   redis:
     image: redis:alpine
     container_name: ticket-redis
-    environment:
-        REDIS_HOST: ${REDIS_HOST:-localhost}
-        REDIS_PORT: ${REDIS_PORT:-6379}
     ports:
       - "6379:6379"
     restart: always
