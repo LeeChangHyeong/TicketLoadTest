@@ -10,6 +10,11 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
+
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class TicketService {
@@ -18,6 +23,19 @@ public class TicketService {
     private final ReservationRepository reservationRepository;
     private final UserRepository userRepository;
 
+    @Cacheable(value = "tickets", key = "'all'")
+    @Transactional(readOnly = true)
+    public List<Ticket> getAllTickets() {
+        try {
+            // 인위적인 병목 시뮬레이션 (무거운 쿼리 가정)
+            Thread.sleep(500); 
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        return ticketRepository.findAllByOrderByIdAsc();
+    }
+
+    @CacheEvict(value = "tickets", allEntries = true)
     @Transactional
     public Long reserve(Long userId, Long ticketId) {
         // 1. 유저 조회

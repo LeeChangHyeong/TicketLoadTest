@@ -32,8 +32,8 @@ public class HomeController {
 
     @GetMapping("/")
     public String home(Model model) {
-        // 항상 ID 순으로 정렬하여 조회
-        List<Ticket> events = ticketRepository.findAllByOrderByIdAsc();
+        // TicketService를 통한 조회 (딜레이 포함)
+        List<Ticket> events = ticketService.getAllTickets();
         model.addAttribute("events", events);
         
         try {

@@ -16,6 +16,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import javax.sql.DataSource;
 import java.sql.Connection;
 
+import hellojpa.ticketloadtest.service.TicketService;
+
 @Component
 @RequiredArgsConstructor
 public class DataInit {
@@ -24,6 +26,7 @@ public class DataInit {
     private final TicketRepository ticketRepository;
     private final DataSource dataSource;
     private final PasswordEncoder passwordEncoder;
+    private final TicketService ticketService;
 
     @EventListener(ApplicationReadyEvent.class)
     @Transactional
@@ -40,5 +43,8 @@ public class DataInit {
             ticketRepository.save(new Ticket("2026 싸이 흠뻑쇼 - 서울", 145000, 10000));
             ticketRepository.save(new Ticket("임영웅 리사이틀", 160000, 30)); // 적은 재고로 테스트용
         }
+
+        // Cache Warm-up
+        ticketService.getAllTickets();
     }
 }
