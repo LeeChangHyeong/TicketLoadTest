@@ -17,7 +17,7 @@ public class SecurityConfig {
         http
             .csrf((csrf) -> csrf.disable()) // JMeter 테스트를 위해 CSRF 비활성화
             .authorizeHttpRequests((requests) -> requests
-                .requestMatchers("/", "/login", "/signup", "/css/**", "/js/**").permitAll()
+                .requestMatchers("/", "/login", "/signup", "/css/**", "/js/**", "/test/**").permitAll()
                 .anyRequest().authenticated()
             )
             .formLogin((form) -> form
